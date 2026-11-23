@@ -186,6 +186,7 @@ button{font-family:inherit;color:inherit;border:0;cursor:pointer;background:none
     <div class="spacer"></div>
     <div class="starcount" id="stars">⭐ 0</div>
     <button class="round langbtn" id="langBtn" aria-label="language">🇬🇧</button>
+    <button class="round" id="fsBtn" aria-label="fullscreen" style="display:none"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#b05fd0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><g id="fsIn"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></g><g id="fsOut" style="display:none"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></g></svg></button>
     <button class="round" id="gearBtn" aria-label="settings">⚙️</button>
   </div>
 
@@ -765,6 +766,23 @@ $("#resetBtn").onclick=()=>{ const b=$("#resetBtn");
 })();
 $("#mascotHome").onclick=()=>{ ctx(); hop(); confetti(innerWidth/2,innerHeight*0.3,12); say(lang==="en"?"Hello! I'm your unicorn friend!":"Cześć! Jestem twoim jednorożcem!"); };
 
+/* ================= FULLSCREEN ================= */
+(function(){
+  const el=document.documentElement;
+  const req=el.requestFullscreen||el.webkitRequestFullscreen;
+  const exit=document.exitFullscreen||document.webkitExitFullscreen;
+  const isFs=()=>!!(document.fullscreenElement||document.webkitFullscreenElement);
+  const standaloneFull=matchMedia("(display-mode: fullscreen)").matches;
+  if(!req||standaloneFull) return;
+  const btn=$("#fsBtn"); btn.style.display="";
+  const sync=()=>{ $("#fsIn").style.display=isFs()?"none":""; $("#fsOut").style.display=isFs()?"":"none"; };
+  const enter=()=>{ try{ const p=req.call(el,{navigationUI:"hide"}); if(p&&p.catch)p.catch(()=>{}); }catch(e){} };
+  btn.onclick=()=>{ if(isFs()){ store.set("fs",false); try{exit.call(document)}catch(e){} } else { store.set("fs",true); enter(); } };
+  document.addEventListener("fullscreenchange",sync); document.addEventListener("webkitfullscreenchange",sync);
+  /* remember the choice: go back to fullscreen on the first tap after opening */
+  if(store.get("fs",false)){ const once=()=>{ if(!isFs()) enter(); document.removeEventListener("pointerdown",once,true); }; document.addEventListener("pointerdown",once,true); }
+  sync();
+})();
 if(window.speechSynthesis){ loadVoices(); speechSynthesis.onvoiceschanged=loadVoices; }
 applyLang();
 if("serviceWorker" in navigator && location.protocol.startsWith("http")){ navigator.serviceWorker.register("sw.js").catch(()=>{}); }

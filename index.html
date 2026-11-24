@@ -74,6 +74,18 @@ button{font-family:inherit;color:inherit;border:0;cursor:pointer;background:none
   font-size:clamp(46px,8vw,70px);font-weight:700;display:grid;place-items:center;box-shadow:0 7px 0 var(--c,#f3c0e0);color:var(--t,#c2459b);transition:transform .12s}
 .ltr:active{transform:translateY(5px) scale(.97);box-shadow:0 2px 0 var(--c,#f3c0e0)}
 .ltr.done{background:linear-gradient(160deg,#fff,#fff6d6)}
+.ltr.wide{width:auto;min-width:clamp(84px,15vw,120px);padding:0 20px;font-size:clamp(38px,6.5vw,58px)}
+.ltr{position:relative}
+.ltr .badge{position:absolute;right:-6px;top:-10px;font-size:22px}
+.modes{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:0 0 14px}
+.mode{padding:10px 18px;border-radius:22px;background:#fff;font-size:24px;font-weight:900;box-shadow:0 5px 0 #e3c6f3;font-family:var(--letter);color:var(--ink)}
+.mode.on{background:linear-gradient(160deg,#9ee8cf,#4fcfa2);color:#fff;box-shadow:0 5px 0 #36a782}
+.gs{transition:color .15s}.gs.hiTxt{color:#9a6bff}
+.bigl.long{font-size:clamp(64px,14vw,120px)}
+.flowerPop{position:fixed;left:50%;bottom:10%;transform:translateX(-50%);z-index:97;pointer-events:none;animation:fpop 2.2s ease forwards;filter:drop-shadow(0 10px 14px #6b3f8744)}
+@keyframes fpop{0%,78%{opacity:1}100%{opacity:0;transform:translate(-50%,-50px)}}
+.mic{--lv:0}
+.mic.voice{background:linear-gradient(160deg,#ff7fbf,#e83f95);box-shadow:0 8px 0 #d9579a,0 0 0 calc(var(--lv)*30px) #ff8cc688;transition:box-shadow .08s}
 
 /* card modal */
 .modal{position:fixed;inset:0;background:#7a4a9a55;backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
@@ -91,7 +103,7 @@ button{font-family:inherit;color:inherit;border:0;cursor:pointer;background:none
 .btn.lil{background:linear-gradient(160deg,#cdb8ff,#9d7dff);box-shadow:0 6px 0 #7456d6}
 .btn.mint{background:linear-gradient(160deg,#a6efd6,#4fcfa2);box-shadow:0 6px 0 #36a782}
 .btn.gold{background:linear-gradient(160deg,#ffe08c,#ffb347);box-shadow:0 6px 0 #d98d2b}
-.trace{position:relative;width:min(420px,84vw);aspect-ratio:1;border-radius:30px;background:repeating-linear-gradient(0deg,#fff 0 24%,#ffe6f4 24% 25%);box-shadow:inset 0 0 0 4px #ffd1ea;touch-action:none}
+.trace{position:relative;width:min(var(--tw,420px),88vw);aspect-ratio:var(--ta,1);border-radius:30px;background:repeating-linear-gradient(0deg,#fff 0 24%,#ffe6f4 24% 25%);box-shadow:inset 0 0 0 4px #ffd1ea;touch-action:none}
 .trace canvas{position:absolute;inset:0;width:100%;height:100%;border-radius:30px}
 
 /* train */
@@ -207,6 +219,7 @@ button{font-family:inherit;color:inherit;border:0;cursor:pointer;background:none
   <!-- LETTERS -->
   <section class="screen" id="letters">
     <div class="levels" data-levels></div>
+    <div class="modes" id="lmodes"></div>
     <div class="grid" id="lgrid"></div>
   </section>
 
@@ -271,6 +284,8 @@ button{font-family:inherit;color:inherit;border:0;cursor:pointer;background:none
     <input type="range" id="rate" min="0.6" max="1.1" step="0.05">
     <button class="btn lil" id="testVoice" style="margin-top:12px">🔊</button>
     <p class="note" data-t="voiceNote"></p>
+    <label data-t="checkMode"></label>
+    <select id="modeSel"><option value="words" data-t="modeWords"></option><option value="voice" data-t="modeVoice"></option></select>
     <p class="note" id="micNote"></p>
     <button class="btn" id="resetBtn" style="font-size:18px;margin-top:6px" data-t="reset"></button>
   </div>
@@ -293,7 +308,11 @@ const DATA = {
       readIt:"Read the word out loud!", louder:"I can't hear you. Say it a bit louder!", listen:"Listen:", yourTurn:"Your turn!",
       micYes:"🎤 Reading out loud works in this browser. The child presses the pink microphone and reads the word. 👍 in the corner is for grown-ups: tap it when she read it correctly but the microphone didn't catch it.",
       micNo:"🎤 This browser can't listen. Open the app in Chrome or Safari (online). Meanwhile use the grown-up 👍 button to confirm reading.",
-      micDenied:"The microphone is blocked. Allow it in the browser settings."},
+      micDenied:"The microphone is blocked. Allow it in the browser settings.",
+      follow:"Draw over the pink letters!", checkMode:"Checking reading out loud",
+      modeWords:"🧠 Recognise the word (needs internet)", modeVoice:"👂 Just listen that she reads (works offline)",
+      modeVoiceNote:"👂 The app listens for the child's voice. When she finishes reading, the word is revealed and the unicorn reads it so she can compare. It can't tell a wrong word from a right one.",
+      itSays:"It says:", tabs:["🔤 a","🔡 at","📝 cat"]},
   map:{c:"k",k:"k",ck:"k",ll:"l",ss:"s",ff:"f"},
   levels:[["s","a","t","i","p","n"],["c","k","e","h","r","m","d"],["g","o","u","l","f","b"],["j","z","w","v","y","x","qu"],["sh","ch","th","ng","ck"],["ee","oo","ai","ar","or"]],
   kw:{s:["snake","🐍"],a:["apple","🍎"],t:["tiger","🐯"],i:["insect","🐞"],p:["penguin","🐧"],n:["nose","👃"],c:["cat","🐱"],k:["kite","🪁"],e:["egg","🥚"],h:["hat","🎩"],
@@ -320,7 +339,11 @@ const DATA = {
       readIt:"Przeczytaj wyraz na głos!", louder:"Nie słyszę cię. Powiedz trochę głośniej!", listen:"Posłuchaj:", yourTurn:"Teraz ty!",
       micYes:"🎤 Czytanie na głos działa w tej przeglądarce. Dziecko naciska różowy mikrofon i czyta wyraz. 👍 w rogu jest dla dorosłych: dotknij, gdy dziecko przeczytało dobrze, a mikrofon nie usłyszał.",
       micNo:"🎤 Ta przeglądarka nie umie słuchać. Otwórz aplikację w Chrome lub Safari (z internetem). Na razie potwierdzaj czytanie przyciskiem 👍.",
-      micDenied:"Mikrofon jest zablokowany. Zezwól na niego w ustawieniach przeglądarki."},
+      micDenied:"Mikrofon jest zablokowany. Zezwól na niego w ustawieniach przeglądarki.",
+      follow:"Rysuj po różowych literkach!", checkMode:"Sprawdzanie czytania na głos",
+      modeWords:"🧠 Rozpoznawanie wyrazu (wymaga internetu)", modeVoice:"👂 Tylko słucham, czy czyta (działa offline)",
+      modeVoiceNote:"👂 Aplikacja nasłuchuje głosu dziecka. Gdy skończy czytać, wyraz się odsłania, a jednorożec go czyta, żeby dziecko mogło porównać. Ten tryb nie odróżni złego wyrazu od dobrego.",
+      itSays:"Tu jest napisane:", tabs:["🔤 a","🔡 ma","📝 mama"]},
   map:{"ó":"u","rz":"ż","h":"ch"},
   levels:[["a","o","e","i","u","y","m","l"],["t","p","s","k"],["n","d","b","w","r"],["j","g","z","c","ł","f","h","ó"],["sz","cz","rz","ż","ch"],["ś","ć","ń","ź","dz","dź","ą","ę"]],
   kw:{a:["ananas","🍍"],o:["okulary","👓"],e:["elf","🧝"],i:["indyk","🦃"],u:["ucho","👂"],y:["dym","💨"],m:["mysz","🐭"],l:["lew","🦁"],t:["tygrys","🐯"],p:["pies","🐶"],
@@ -420,7 +443,16 @@ function confetti(x,y,n=22){
 }
 function bubble(t){ const b=document.createElement("div"); b.className="bubble"; b.textContent=t; document.body.appendChild(b); setTimeout(()=>b.remove(),1700); }
 function cheer(x,y){ const arr=T("yay"); const t=arr[Math.floor(Math.random()*arr.length)]; bubble(t+" 🦄"); confetti(x??innerWidth/2,y??innerHeight/2); say(t); }
-function addStar(n=1){ P().stars+=n; save(); renderStars(); }
+function addStar(n=1){
+  P().stars+=n; for(let i=0;i<n;i++) addFlower(); save(); renderStars();
+  if(cur!=="train") flowerPop();
+}
+function flowerPop(){
+  const fl=P().flowers||[]; if(!fl.length) return;
+  const d=document.createElement("div"); d.className="flowerPop";
+  d.innerHTML=`<span class="fl new">${flowerSVG(fl[fl.length-1],innerWidth<640?150:210)}</span>`;
+  document.body.appendChild(d); setTimeout(()=>d.remove(),2300);
+}
 function renderStars(){ $("#stars").textContent="⭐ "+P().stars; }
 
 /* ================= MASCOT ================= */
@@ -456,11 +488,11 @@ function go(id){
   $("#homeBtn").style.visibility=id==="home"?"hidden":"visible";
   if(window.speechSynthesis) speechSynthesis.cancel();
   if(id==="letters"){ renderLevels(); renderLetters(); say(T("hiLetters")); }
+  if(id!=="train" && listening) stopListening();
   if(id==="train"){ renderLevels(); newWord(true); }
   if(id==="balloons"){ renderLevels(); startBalloons(); }
   if(id==="stickers"){ renderStickers(); }
   if(id!=="balloons") stopBalloons();
-  if(id!=="train" && listening && rec){ try{rec.abort()}catch(_){} }
   $("#okBtn").style.display=id==="train"?"":"none";
 }
 $$("[data-go]").forEach(b=>b.onclick=()=>{ ctx(); go(b.dataset.go); });
@@ -488,65 +520,135 @@ function renderLevels(){
 }
 
 /* ================= LETTERS ================= */
+let lmode="l";  /* l = letters, c = combinations, w = whole words */
+function graphemes(){ const L_=L(); return [...new Set([...Object.keys(L_.kw),...Object.keys(L_.map),...[].concat(...L_.levels)])].sort((a,b)=>b.length-a.length); }
+function splitG(t){ t=t.toLowerCase(); const gs=graphemes(), out=[]; let i=0;
+  while(i<t.length){ const g=gs.find(x=>t.startsWith(x,i)); if(g){out.push(g);i+=g.length;} else {out.push(t[i]);i++;} } return out; }
+function combosAt(lv){
+  const out=[]; const add=t=>{ t=t.toLowerCase(); if(t.length>=2 && !out.includes(t)) out.push(t); };
+  if(lang==="pl"){
+    const V=["a","o","e","i","u","y","ó","ą","ę"];
+    if(lv===0){ ["ma","mo","me","mu","mi","la","lo","le","lu","li","am","om","al","ul","ol","em"].forEach(add); }
+    else { L().levels[lv].filter(g=>!V.includes(g)).forEach(c=>["a","o","e","u"].forEach(v=>add(c+v))); }
+    wordsAt(lv).forEach(w=>w.sylText.forEach(add));
+  } else {
+    const V=["a","e","i","o","u","ee","oo","ai","ar","or"];
+    wordsAt(lv).forEach(w=>{ const g=w.g, vi=g.findIndex(x=>V.includes(x)); if(vi<0) return;
+      const rime=g.slice(vi).join(""); if(rime!==w.text) add(rime);
+      if(vi>=1){ const on=g.slice(0,vi+1).join(""); if(on!==w.text) add(on); } });
+  }
+  return out.slice(0,18);
+}
+function itemsFor(){
+  const lv=level.letters;
+  if(lmode==="l") return L().levels[lv].map(t=>({t,kind:"l",g:[t]}));
+  if(lmode==="c") return combosAt(lv).map(t=>({t,kind:"c",g:splitG(t)}));
+  return wordsAt(lv).map(w=>({t:w.text.toLowerCase(),kind:"w",g:w.g.map(x=>x.toLowerCase()),em:w.em}));
+}
 function renderLetters(){
-  const g=$("#lgrid"); g.innerHTML="";
-  L().levels[level.letters].forEach((ch,i)=>{
+  const tabs=T("tabs"), m=$("#lmodes"); m.innerHTML="";
+  ["l","c","w"].forEach((k,i)=>{ const b=document.createElement("button"); b.className="mode"+(lmode===k?" on":""); b.textContent=tabs[i];
+    b.onclick=()=>{ lmode=k; renderLetters(); }; m.appendChild(b); });
+  const g=$("#lgrid"); g.innerHTML=""; const tr=P().traced||{};
+  itemsFor().forEach((it,i)=>{
     const b=document.createElement("button"); const c=COLORS[i%COLORS.length];
-    b.className="ltr"+(P().seen[ch]?" done":""); b.textContent=ch; b.style.setProperty("--c",c[1]+"55"); b.style.setProperty("--t",c[1]);
-    b.onclick=()=>openCard(ch);
+    b.className="ltr"+(it.kind!=="l"?" wide":"")+((it.kind==="l"&&P().seen[it.t])||tr[it.kind+it.t]?" done":"");
+    b.innerHTML=it.t+(tr[it.kind+it.t]?'<span class="badge">⭐</span>':"");
+    b.style.setProperty("--c",c[1]+"55"); b.style.setProperty("--t",c[1]);
+    b.onclick=()=>openCard(it);
     g.appendChild(b);
   });
 }
-let cardCh=null;
+let cardIt=null;
 async function playCard(){
-  const ch=cardCh, k=L().kw[ch]; const id=++playId;
-  await phone(ch); if(id!==playId) return; await wait(250);
-  await phone(ch); if(id!==playId) return; await wait(300);
-  if(k) await say(k[0]); if(id!==playId) return; await wait(200);
-  await phone(ch);
+  const it=cardIt, id=++playId;
+  if(it.kind==="l"){
+    const k=L().kw[it.t];
+    await phone(it.t); if(id!==playId) return; await wait(250);
+    await phone(it.t); if(id!==playId) return; await wait(300);
+    if(k) await say(k[0]); if(id!==playId) return; await wait(200);
+    await phone(it.t); return;
+  }
+  const spans=$$("#cBig .gs");
+  for(let i=0;i<it.g.length;i++){ if(id!==playId) return; spans[i]&&spans[i].classList.add("hiTxt"); await phone(it.g[i]); spans[i]&&spans[i].classList.remove("hiTxt"); await wait(130); }
+  if(id!==playId) return; await wait(250);
+  if(it.kind==="w" || lang==="pl") await say(it.t);
+  else { for(const g of it.g){ if(id!==playId) return; await phone(g); } }
 }
 function upper(ch){ return ch.charAt(0).toUpperCase()+ch.slice(1); }
-function openCard(ch){
-  cardCh=ch; $("#cBig").innerHTML=ch+`<span class="up">${upper(ch)}</span>`;
-  const k=L().kw[ch]||["",""];
-  const i=k[0].indexOf(ch); const kwHtml=i>=0?k[0].slice(0,i)+"<b>"+ch+"</b>"+k[0].slice(i+ch.length):k[0];
-  $("#cKw").innerHTML=`<span class="em">${k[1]}</span><span>${kwHtml}</span>`;
+function openCard(it){
+  cardIt=it; const big=$("#cBig");
+  big.classList.toggle("long",it.kind!=="l");
+  if(it.kind==="l"){
+    big.innerHTML=it.t+`<span class="up">${upper(it.t)}</span>`;
+    const k=L().kw[it.t]||["",""];
+    const i=k[0].indexOf(it.t); const kwHtml=i>=0?k[0].slice(0,i)+"<b>"+it.t+"</b>"+k[0].slice(i+it.t.length):k[0];
+    $("#cKw").innerHTML=`<span class="em">${k[1]}</span><span>${kwHtml}</span>`;
+    if(!P().seen[it.t]){ P().seen[it.t]=1; save(); }
+  } else {
+    big.innerHTML=it.g.map(g=>`<span class="gs">${g}</span>`).join("");
+    $("#cKw").innerHTML=it.em?`<span class="em">${it.em}</span>`:"";
+  }
   $("#traceBox").style.display="none"; $("#traceBtns").style.display="none";
-  $("#cBig").style.display=""; $("#cKw").style.display="";
+  big.style.display=""; $("#cKw").style.display="";
   $("#cardM").classList.add("on");
-  if(!P().seen[ch]){ P().seen[ch]=1; save(); renderLetters(); }
   playCard();
 }
-$("#cPlay").onclick=playCard; $("#cBig").onclick=()=>{ playId++; phone(cardCh); };
-$("#cKw").onclick=()=>{ const k=L().kw[cardCh]; if(k) say(k[0]); };
-$$("[data-close]").forEach(b=>b.onclick=()=>{ playId++; b.closest(".modal").classList.remove("on"); });
+$("#cPlay").onclick=()=>{ $("#cBig").style.display=""; playCard(); };
+$("#cBig").onclick=()=>{ if(cardIt.kind==="l"){ playId++; phone(cardIt.t); } else playCard(); };
+$("#cKw").onclick=()=>{ if(cardIt.kind==="l"){ const k=L().kw[cardIt.t]; if(k) say(k[0]); } else say(cardIt.t); };
+$$("[data-close]").forEach(b=>b.onclick=()=>{ playId++; b.closest(".modal").classList.remove("on"); if(cur==="letters") renderLetters(); });
 
 /* tracing */
-let inkCtx, drawing=false, inkLen=0, hue=0;
+let inkCtx, drawing=false, inkLen=0, hue=0, traceW=0, traceH=0;
 function setupTrace(){
+  const t=cardIt.t, len=t.length;
   $("#cBig").style.display="none"; $("#cKw").style.display="none";
-  const box=$("#traceBox"); box.style.display="block"; $("#traceBtns").style.display="flex";
-  const r=box.getBoundingClientRect(), dpr=devicePixelRatio||1;
+  const box=$("#traceBox");
+  box.style.setProperty("--ta", len<=1?"1":len===2?"1.4":"1.8");
+  box.style.setProperty("--tw", len<=1?"420px":"620px");
+  box.style.display="block"; $("#traceBtns").style.display="flex";
+  const r=box.getBoundingClientRect(), dpr=devicePixelRatio||1; traceW=r.width; traceH=r.height;
   ["#guide","#ink"].forEach(s=>{ const c=$(s); c.width=r.width*dpr; c.height=r.height*dpr; c.getContext("2d").setTransform(dpr,0,0,dpr,0,0); });
   const gc=$("#guide").getContext("2d"); gc.clearRect(0,0,r.width,r.height);
-  const fs=r.width*(cardCh.length>1?0.52:0.78);
-  gc.font=`700 ${fs}px ${getComputedStyle(document.documentElement).getPropertyValue("--letter")}`;
+  const fam=getComputedStyle(document.documentElement).getPropertyValue("--letter");
+  let fs=r.height*0.8; gc.font=`700 ${fs}px ${fam}`;
+  const mw=gc.measureText(t).width; if(mw>r.width*0.88){ fs=fs*r.width*0.88/mw; gc.font=`700 ${fs}px ${fam}`; }
   gc.textAlign="center"; gc.textBaseline="middle";
-  gc.fillStyle="#ffe1f1"; gc.fillText(cardCh,r.width/2,r.height*0.52);
-  gc.setLineDash([6,10]); gc.lineWidth=4; gc.strokeStyle="#f29acb"; gc.strokeText(cardCh,r.width/2,r.height*0.52);
+  gc.fillStyle="#ffd6ec"; gc.fillText(t,r.width/2,r.height*0.52);
+  gc.setLineDash([6,10]); gc.lineWidth=Math.max(3,fs*0.02); gc.strokeStyle="#f29acb"; gc.strokeText(t,r.width/2,r.height*0.52);
   inkCtx=$("#ink").getContext("2d"); inkCtx.clearRect(0,0,r.width,r.height); inkLen=0;
+  inkCtx._lw=Math.max(12,Math.min(24,fs*0.12));
   say(T("trace"));
 }
+/* how much of the letter is covered, and how much ink went far outside it */
+function traceScore(){
+  const dpr=devicePixelRatio||1, W=$("#guide").width, H=$("#guide").height;
+  const gd=$("#guide").getContext("2d").getImageData(0,0,W,H).data, id=$("#ink").getContext("2d").getImageData(0,0,W,H).data;
+  const step=Math.max(2,Math.round(3*dpr)), near=Math.round(16*dpr);
+  const isG=(x,y)=>x>=0&&y>=0&&x<W&&y<H&&gd[(y*W+x)*4+3]>40, isI=(x,y)=>id[(y*W+x)*4+3]>40;
+  let g=0,gc=0,ink=0,out=0;
+  for(let y=0;y<H;y+=step) for(let x=0;x<W;x+=step){
+    const G=isG(x,y), I=isI(x,y);
+    if(G){ g++; if(I) gc++; }
+    if(I){ ink++; if(!G && !isG(x+near,y)&&!isG(x-near,y)&&!isG(x,y+near)&&!isG(x,y-near)) out++; }
+  }
+  return {cover:g?gc/g:0, outside:ink?out/ink:1};
+}
 $("#cTrace").onclick=setupTrace;
-$("#tClear").onclick=()=>{ const r=$("#traceBox").getBoundingClientRect(); inkCtx.clearRect(0,0,r.width,r.height); inkLen=0; };
-$("#tDone").onclick=e=>{ if(inkLen<60){ $("#traceBox").classList.add("shake"); setTimeout(()=>$("#traceBox").classList.remove("shake"),400); return; }
-  addStar(); cheer(e.clientX,e.clientY); setTimeout(()=>$("#tClear").onclick(),900); };
+$("#tClear").onclick=()=>{ inkCtx.clearRect(0,0,traceW,traceH); inkLen=0; };
+$("#tDone").onclick=e=>{
+  const sc=traceScore();
+  if(sc.cover<0.33 || sc.outside>0.5){ $("#traceBox").classList.add("shake"); setTimeout(()=>$("#traceBox").classList.remove("shake"),400); say(T("follow")); return; }
+  const tr=P().traced||(P().traced={}); tr[cardIt.kind+cardIt.t]=1;
+  addStar(); cheer(e.clientX,e.clientY); setTimeout(()=>$("#tClear").onclick(),900);
+};
 (function(){
   const c=$("#ink"); let last=null;
   const pos=e=>{ const r=c.getBoundingClientRect(); return [e.clientX-r.left,e.clientY-r.top]; };
   c.addEventListener("pointerdown",e=>{ drawing=true; last=pos(e); c.setPointerCapture(e.pointerId); });
   c.addEventListener("pointermove",e=>{ if(!drawing) return; const p=pos(e);
-    hue=(hue+4)%360; inkCtx.strokeStyle=`hsl(${hue},90%,70%)`; inkCtx.lineWidth=22; inkCtx.lineCap="round"; inkCtx.lineJoin="round";
+    hue=(hue+4)%360; inkCtx.strokeStyle=`hsl(${hue},90%,70%)`; inkCtx.lineWidth=inkCtx._lw||22; inkCtx.lineCap="round"; inkCtx.lineJoin="round";
     inkCtx.beginPath(); inkCtx.moveTo(...last); inkCtx.lineTo(...p); inkCtx.stroke(); inkLen+=Math.hypot(p[0]-last[0],p[1]-last[1]); last=p; });
   const up=()=>drawing=false; c.addEventListener("pointerup",up); c.addEventListener("pointercancel",up);
 })();
@@ -560,7 +662,7 @@ function newWord(intro){
   const pool=fresh.length?fresh:ws;
   let w; do{ w=pool[Math.floor(Math.random()*pool.length)]; }while(pool.length>1&&curWord&&w.text===curWord.text);
   curWord=w; blending=false; tries=0; revealed=false; $("#heard").textContent=""; $("#nextWord").classList.remove("nextGlow");
-  if(listening&&rec){ try{rec.abort()}catch(_){} }
+  if(listening) stopListening();
   $("#pic").textContent=w.em; $("#pic").classList.add("hidden"); $("#tword").textContent="";
   const tr=$("#track"); tr.className="track"; tr.innerHTML='<div class="engine">🚂</div>';
   const sylOf=i=>w.syl.findIndex(s=>s.includes(i));
@@ -582,7 +684,7 @@ function reveal(){
 /* help: the unicorn blends the word, then it's the child's turn */
 $("#blendBtn").onclick=async e=>{
   if(blending) return; blending=true; const id=++playId; const w=curWord;
-  if(listening&&rec){ try{rec.abort()}catch(_){} }
+  if(listening) stopListening();
   const wag=$$("#track .wagon");
   for(let i=0;i<w.g.length;i++){ if(id!==playId){blending=false;return;} wag[i].classList.add("hi"); await phone(w.g[i]); wag[i].classList.remove("hi"); await wait(120); }
   if(id!==playId){blending=false;return;}
@@ -593,43 +695,93 @@ $("#blendBtn").onclick=async e=>{
   await say(w.text.toLowerCase());
   blending=false; if(id!==playId) return;
   await say(T("yourTurn")); if(id!==playId) return;
-  if(SR) listen();
+  listen();
 };
 
 /* ---- reading out loud ---- */
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-let rec=null, listening=false, tries=0, revealed=false, micDenied=false;
+let rec=null, listening=false, tries=0, revealed=false, micDenied=false, emptyRuns=0, sessionVoice=false, stopFn=null;
 const ALTS={en:{ant:["aunt"],ten:["10"],six:["6"],sun:["son"],red:["read"],bee:["be","b"],rain:["reign","rein"],ring:["wring"],
-                 nap:["knap"],net:["nett"],pen:["penn"],kid:["kidd"],bus:["buss"],corn:["korn"],bed:["bedd"]},
-            pl:{ul:["ol","hul"],dom:["dom"],ucho:["uho"],chleb:["hleb","chlep"]}};
+                 nap:["knap"],net:["nett"],pen:["penn"],kid:["kidd"],bus:["buss"],corn:["korn"],bed:["bedd"],tree:["three","3"],car:["ka","kar"],star:["stah"]},
+            pl:{ul:["ol","hul"],ucho:["uho"],chleb:["hleb","chlep"]}};
 function normTxt(t){ return t.toLowerCase().replace(/ł/g,"l").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim(); }
 function lev(a,b){ const d=Array.from({length:a.length+1},(_,i)=>[i]); for(let j=1;j<=b.length;j++)d[0][j]=j;
   for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1)); return d[a.length][b.length]; }
+/* sound-alike key: consonant skeleton (children's vowels are what recognisers mishear most) */
+function skel(w){ return w.replace(/ph/g,"f").replace(/ck/g,"k").replace(/qu/g,"kw").replace(/rz/g,"z").replace(/sz/g,"S").replace(/cz/g,"C").replace(/sh/g,"S").replace(/ch/g,"H").replace(/th/g,"T")
+  .replace(/c/g,"k").replace(/q/g,"k").replace(/x/g,"ks").replace(/z/g,"s").replace(/h/g,"").replace(/[aeiouyw]/g,"").replace(/(.)\1+/g,"$1"); }
 function matches(cands,target){
-  const t=normTxt(target); const alts=[t,...((ALTS[lang]||{})[t]||[]).map(normTxt)];
+  const t=normTxt(target), ts=skel(t); const alts=[t,...((ALTS[lang]||{})[t]||[]).map(normTxt)];
   for(const c of cands){ const n=normTxt(c); if(!n) continue;
-    if(alts.includes(n)||alts.includes(n.replace(/ /g,""))) return true;
-    const toks=n.split(" "); if(toks.some(k=>alts.includes(k))) return true;
-    if(t.length>=5 && toks.some(k=>lev(k,t)<=1)) return true; }
+    const joined=n.replace(/ /g,""), toks=n.split(" ");
+    if(alts.includes(n)||alts.includes(joined)||toks.some(k=>alts.includes(k))) return true;
+    for(const k of toks.concat([joined])){
+      if(t.length>=4 && lev(k,t)<=1) return true;
+      if(ts.length && skel(k)===ts && Math.abs(k.length-t.length)<=2) return true;
+    }
+  }
   return false;
 }
-function listen(){
-  if(!SR){ bubble("👍"); say(T("micNo").replace(/^🎤 /,"").split(".")[0]); return; }
-  if(listening){ try{rec.stop()}catch(_){} return; }
-  if(revealed && !blending){ /* already read: allow reading again for practice */ }
+function checkMode(){ if(sessionVoice||!SR) return "voice"; return store.get("checkMode","words"); }
+function micOn(on,voice){ const m=$("#micBtn"); m.classList.toggle("on",on&&!voice); m.classList.toggle("voice",on&&!!voice); if(!on) m.style.setProperty("--lv",0); }
+function stopListening(){ if(stopFn) stopFn(); }
+async function listen(){
+  if(listening){ stopListening(); return; }
   if(window.speechSynthesis) speechSynthesis.cancel(); playId++;
-  const target=curWord; let ok=false, heard="";
-  try{
-    rec=new SR(); rec.lang=L().speech; rec.interimResults=true; rec.maxAlternatives=5; rec.continuous=false;
-  }catch(e){ return; }
-  rec.onresult=e=>{ const c=[]; for(const r of e.results) for(let i=0;i<r.length;i++) c.push(r[i].transcript);
-    if(c[0]) heard=c[0]; $("#heard").textContent="🎧 "+heard;
-    if(!ok && matches(c,target.text)){ ok=true; try{rec.stop()}catch(_){} } };
-  rec.onerror=e=>{ if(e.error==="not-allowed"||e.error==="service-not-allowed"){ micDenied=true; bubble("🎤🚫"); } };
-  rec.onend=()=>{ listening=false; $("#micBtn").classList.remove("on"); clearTimeout(rec._t);
+  listening=true; micOn(true, checkMode()==="voice");
+  await wait(300);                     /* let the speaker go quiet before the mic opens */
+  if(!listening) return;
+  if(checkMode()==="voice") listenVoice(); else listenWords();
+}
+/* mode 1: the browser's word recogniser, kept open for 10 s and restarted if it gives up early */
+function listenWords(){
+  const target=curWord, deadline=Date.now()+10000; let ok=false, heard="", hard=false, userStop=false, done=false;
+  const finish=()=>{ if(done) return; done=true; listening=false; stopFn=null; micOn(false); clearTimeout(timer);
     if(target!==curWord) return;
-    if(ok) readSuccess(); else if(!micDenied) readFail(heard); };
-  try{ rec.start(); listening=true; $("#micBtn").classList.add("on"); rec._t=setTimeout(()=>{ try{rec.stop()}catch(_){} },7000); }catch(e){ listening=false; }
+    if(ok) return readSuccess();
+    if(micDenied) return;
+    if(hard){ sessionVoice=true; bubble("👂"); listening=true; micOn(true,true); return listenVoice(); }
+    if(!heard){ emptyRuns++; if(emptyRuns>=2){ emptyRuns=0; bubble("👂"); listening=true; micOn(true,true); return listenVoice(); } }
+    else emptyRuns=0;
+    readFail(heard); };
+  const start=()=>{
+    try{ rec=new SR(); }catch(e){ hard=true; return finish(); }
+    rec.lang=L().speech; rec.interimResults=true; rec.maxAlternatives=10; rec.continuous=true;
+    rec.onresult=e=>{ const c=[]; for(let r=0;r<e.results.length;r++) for(let i=0;i<e.results[r].length;i++) c.push(e.results[r][i].transcript);
+      if(c[0]) heard=c[0]; $("#heard").textContent="🎧 "+heard;
+      if(!ok && matches(c,target.text)){ ok=true; try{rec.stop()}catch(_){} } };
+    rec.onerror=e=>{ if(e.error==="not-allowed"){ micDenied=true; bubble("🎤🚫"); }
+      else if(["network","service-not-allowed","audio-capture","language-not-supported"].includes(e.error)) hard=true; };
+    rec.onend=()=>{ if(!ok && !hard && !micDenied && !userStop && Date.now()<deadline && target===curWord){ try{ start(); return; }catch(_){} } finish(); };
+    try{ rec.start(); }catch(e){ hard=true; finish(); }
+  };
+  const timer=setTimeout(()=>{ userStop=true; try{rec.stop()}catch(_){ finish(); } setTimeout(finish,1500); },10000);
+  stopFn=()=>{ userStop=true; try{rec.stop()}catch(_){ finish(); } setTimeout(finish,1500); };
+  start();
+}
+/* mode 2: listen for the child's voice with the microphone level (works offline, everywhere) */
+async function listenVoice(){
+  const target=curWord; let stream;
+  try{ stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}}); }
+  catch(e){ listening=false; micOn(false); micDenied=true; bubble("🎤🚫"); say(T("micDenied")); return; }
+  const c=ctx(), src=c.createMediaStreamSource(stream), an=c.createAnalyser(); an.fftSize=1024; src.connect(an);
+  const buf=new Float32Array(an.fftSize); const t0=performance.now(); let last=t0, floor=0.004, speech=0, lastLoud=0, spoke=false, done=false;
+  const finish=ok=>{ if(done) return; done=true; listening=false; stopFn=null; stream.getTracks().forEach(t=>t.stop()); try{src.disconnect()}catch(_){} micOn(false);
+    if(target!==curWord) return; if(ok) readSuccess(); else readFail(""); };
+  stopFn=()=>finish(spoke);
+  const tick=now=>{ if(done) return; const dt=Math.min(100,now-last); last=now;
+    an.getFloatTimeDomainData(buf); let s=0; for(let i=0;i<buf.length;i++) s+=buf[i]*buf[i]; const rms=Math.sqrt(s/buf.length);
+    const el=now-t0;
+    if(el<400){ floor=Math.min(0.03,Math.max(floor,rms)); }
+    else {
+      const th=Math.max(0.012,floor*2.2);
+      $("#micBtn").style.setProperty("--lv",Math.min(1,rms/(th*3)));
+      if(rms>th){ speech+=dt; lastLoud=now; if(speech>200) spoke=true; }
+      if(spoke && now-lastLoud>800) return finish(true);
+      if(el>10000) return finish(spoke);
+    }
+    requestAnimationFrame(tick); };
+  requestAnimationFrame(tick);
 }
 $("#micBtn").onclick=()=>{ ctx(); listen(); };
 async function readFail(heard){
@@ -646,14 +798,14 @@ async function readSuccess(){
   P().stickers[w.text]=1;
   const lvAll=wordsAt(level.train).every(x=>P().stickers[x.text]);
   if(lvAll && !P().lvStars["train"+level.train]){ P().lvStars["train"+level.train]=1; renderLevels(); }
-  addFlower(); P().stars++; save(); renderStars();
+  addStar();
   try{ $("#gardenStrip").scrollIntoView({block:"nearest",behavior:"smooth"}); }catch(_){}
   const r=$("#gardenStrip").getBoundingClientRect();
   cheer(r.left+r.width/2, r.top);
   $("#nextWord").classList.add("nextGlow");
-  await wait(1100); say(w.text.toLowerCase());
+  await wait(1100); if(checkMode()==="voice") await say(T("itSays")); say(w.text.toLowerCase());
 }
-$("#okBtn").onclick=()=>{ if(listening&&rec){ try{rec.abort()}catch(_){} } readSuccess(); };
+$("#okBtn").onclick=()=>{ if(listening) stopListening(); readSuccess(); };
 
 /* ---- flowers ---- */
 const PETALS=["#ff8cc6","#c9a7ff","#ffb38a","#ffe066","#8ec9ff","#ff9a9a","#b8f0a0","#f7a8ff"];
@@ -748,12 +900,15 @@ function fillVoices(){
 $("#voiceSel").onchange=e=>store.set("voice_"+lang,e.target.value);
 $("#rate").oninput=e=>store.set("rate",parseFloat(e.target.value));
 $("#testVoice").onclick=()=>say(lang==="en"?"Hello! Let's read together. Cat, sun, rainbow.":"Cześć! Czytamy razem. Kot, słońce, tęcza.");
-$("#gearBtn").onclick=()=>{ fillVoices(); $("#micNote").textContent=micDenied?T("micDenied"):(SR?T("micYes"):T("micNo")); $("#setM").classList.add("on"); };
+function micNote(){ $("#modeSel").value=checkMode(); $("#modeSel").options[0].disabled=!SR;
+  $("#micNote").textContent=micDenied?T("micDenied"):(checkMode()==="voice"?T("modeVoiceNote")+(SR?"":" "+T("micNo")):T("micYes")); }
+$("#modeSel").onchange=e=>{ store.set("checkMode",e.target.value); sessionVoice=false; micNote(); };
+$("#gearBtn").onclick=()=>{ fillVoices(); micNote(); $("#setM").classList.add("on"); };
 let resetArmed=false;
 $("#resetBtn").onclick=()=>{ const b=$("#resetBtn");
   if(!resetArmed){ resetArmed=true; b.textContent=T("resetQ")+" ✔️"; setTimeout(()=>{resetArmed=false; b.textContent=T("reset");},4000); return; }
   resetArmed=false; b.textContent=T("reset");
-  prog[lang]={stars:0,stickers:{},seen:{},lvStars:{},flowers:[]}; save(); renderStars(); $("#setM").classList.remove("on"); go("home"); };
+  prog[lang]={stars:0,stickers:{},seen:{},lvStars:{},flowers:[],traced:{}}; save(); renderStars(); $("#setM").classList.remove("on"); go("home"); };
 
 /* ================= SKY DECOR ================= */
 (function(){
@@ -783,6 +938,8 @@ $("#mascotHome").onclick=()=>{ ctx(); hop(); confetti(innerWidth/2,innerHeight*0
   if(store.get("fs",false)){ const once=()=>{ if(!isFs()) enter(); document.removeEventListener("pointerdown",once,true); }; document.addEventListener("pointerdown",once,true); }
   sync();
 })();
+["en","pl"].forEach(lg=>{ const p=prog[lg]; if(!p) return; p.flowers=p.flowers||[]; let n=p.flowers.length;
+  while(p.flowers.length<p.stars){ p.flowers.push({k:n%3,c:(n*3)%PETALS.length}); n++; } }); save();
 if(window.speechSynthesis){ loadVoices(); speechSynthesis.onvoiceschanged=loadVoices; }
 applyLang();
 if("serviceWorker" in navigator && location.protocol.startsWith("http")){ navigator.serviceWorker.register("sw.js").catch(()=>{}); }
